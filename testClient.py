@@ -13,7 +13,7 @@ def Main():
         soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         soc.bind(('', 1459))
         soc.listen(10)
-        soc.connect((?,port))
+        soc.connect(('',port))
          
         message = input(" -> ")
          
