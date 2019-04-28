@@ -18,9 +18,9 @@ def Main():
                     break
             print ("from connected  user: " + str(data))
              
-            #data = str(data).upper()
-            #print ("sending: " + str(data))
-            #conn.send(data.encode())
+            data = str(data).upper()
+            print ("sending: " + str(data))
+            conn.send(data.encode())
              
     conn.close()
      
