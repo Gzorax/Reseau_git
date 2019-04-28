@@ -80,6 +80,7 @@ def Server():
             #un client se connecte au server
             if s is soc:
                 client, adresse = s.accept()
+                client.send('vous etes connecté'.encode())
                 message = " bonjour a toi, quel est ton pseudo\n"
                 s.send(message.encode())
                 pseudo = s.recv(4096)
@@ -91,7 +92,7 @@ def Server():
 
                 DictClient[pseudo] = client
                 
-                s.input("\ name <pseudo> -> pour changer de nom\n \ chanel_list -> affiche la liste des caneaux \n \ join <name> -> rejoindre le chanel <name> \n \ who -> affiche la liste des autres participents du canal \n \ prv_msg <name> -> Envoie le prochain message a l'ulisateur concerné uniquement\n \ leave -> quitter le chanel\n \ bye -> quitter le server\n")
+                s.input("/name <pseudo> -> pour changer de nom\n /chanel_list -> affiche la liste des caneaux \n /join <name> -> rejoindre le chanel <name> \n /who -> affiche la liste des autres participents du canal \n /prv_msg <name> -> Envoie le prochain message a l'ulisateur concerné uniquement\n /leave -> quitter le chanel\n /bye -> quitter le server\n")
 
                 soc_list.append(client)
                 serverClients.append(client)
