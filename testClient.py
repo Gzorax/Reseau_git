@@ -6,14 +6,14 @@ def Main():
         host = '127.0.0.1'
         port = 1459
          
-        #mySocket = socket.socket()
-        #mySocket.connect((host,port))
+        soc = socket.socket()
+        soc.connect((host,port))
 
-        soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-        soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        soc.bind(('', 1459))
-        soc.listen(10)
-        soc.connect((?,port))
+        #soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        #soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        #soc.bind(('', 1459))
+        #soc.listen(10)
+        #soc.connect((?,port))
          
         message = input(" -> ")
          
