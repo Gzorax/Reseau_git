@@ -1,9 +1,9 @@
 import socket
 import select
 import threading
- 
+
+
 def Main_server():
-    
 
         port = 1459
 
@@ -17,16 +17,16 @@ def Main_server():
      
     mySocket.listen(1)
     conn, addr = mySocket.accept()
-    #print ("Connection from: " + str(addr))
+    # print ("Connection from: " + str(addr))
     while True:
             data = conn.recv(1024).decode()
             if not data:
                     break
             print ("from connected  user: " + str(data))
              
-            #data = str(data).upper()
-            #print ("sending: " + str(data))
-            #conn.send(data.encode())
+            # data = str(data).upper()
+            # print ("sending: " + str(data))
+            # conn.send(data.encode())
              
     conn.close()
      
