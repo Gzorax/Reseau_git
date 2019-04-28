@@ -14,7 +14,19 @@ def Main():
         #soc.bind(('', 1459))
         #soc.listen(10)
         
-         
+        #data = soc.recv(1024).decode()
+        #print ('Received from server: ' + data)
+        data = ''
+        while data != 'done':
+                #recoi le text envoyer par le server
+                data = soc.recv(1024).decode()
+                if data == 'done':
+                        break
+                print ('Received from server: ' + data)
+                message = input(" -> ")
+                soc.send(message.encode())
+                
+        print ("Received from server: name saved")
         message = input(" -> ")
          
         while message != 'q':
@@ -22,7 +34,6 @@ def Main():
                 soc.send(message.encode())
                 #recoi le text envoyer par le server
                 data = soc.recv(1024).decode()
-                 
                 print ('Received from server: ' + data)
                  
                 message = input(" -> ")
