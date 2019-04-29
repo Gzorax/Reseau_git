@@ -3,24 +3,36 @@ import select
 import threading
 def auxReadInput(text, i):
         commande = ''
-        condition = (i < len(text)-1) & (text[i] != ' ' )
+        if not i < len(text):
+                condition = False
+        else: 
+                condition = text[i] != ' '
+        #condition = (i < len(text)) & (text[i] != ' ' )
         while condition:
                 commande = commande + text[i]
+                print("lettre " + str(i) +" "+ text[i])
                 i += 1
-                condition = (i < len(text)-1) & (text[i] != ' ' )
+
+                if not i < len(text):
+                        condition = False
+                else: 
+                        condition = text[i] != ' '
+                
+                #condition = (i < len(text)) & (text[i] != ' ' )
         return (commande , i)
 
-def ReadInput (text):
-        data = []
+def ReadInput (text,soc):
+        data = ''
         if text[0] != '/':
                 print("la commande entrée est un message")
                 return (1,text)      
         else: 
                 print("la commande entrée est une instruction")
                 i = 1
-                while i != len(text):
+                while i < len(text):
                         commande ,y = auxReadInput(text,i)
-                        data = data.append(commande)
+                        print ("instruction : " + commande)
+                        soc.send(commande.encode())
                         i = y + 1
                 return(2,data)
                 
@@ -53,20 +65,13 @@ def Main():
                 if message == '/HELP':
                         print (documentation)
                 else:
-                        typ,data = ReadInput(message)
+                        typ,reponce = ReadInput(message,soc)
                         if typ == 1:
-                                for i in range(len(data)):
-                                        print("data send : " + data[i])
-                                        soc.send(data[i].encode())
+                                print (reponce)
+                        else: 
                                 reponce = soc.recv(1024).decode()
                                 print ('Received from server: ' + reponce)
-                        else:
-                        #envoie le message au channel
-                                #envoie la demande de texte
-                                soc.send(message.encode())
-                                #recoi le text envoyer par le server
-                                reponce = soc.recv(1024).decode()
-                                print (reponce)
+                        
                         
                 message = input(" -> ")
 
