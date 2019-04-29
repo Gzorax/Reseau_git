@@ -2,6 +2,7 @@ import socket
 import select
 import threading
 
+ClientDict = {}
 
 def Server():
     # init
@@ -10,4 +11,7 @@ def Server():
     serversocket.bind(('', 1459))
     serversocket.listen(10)
 
-while True :
+        while True :
+                (clientsocket, adress) = serversocket.accept()
+
+                ClientDict{clientsocket} = clientsocket 
