@@ -53,23 +53,25 @@ def Main():
             if not data:
                     break
             print ("from connected " + name + ":" + str(data))
-            if data == '/LIST':
-                    data = LIST(dictChannel)
-                    print ("sending : " + data)
-                    conn.send(data.encode())
+            if data == 'LIST':
+                    reponce = LIST(dictChannel)
+                    print ("sending : " + reponce)
+                    conn.send(reponce.encode())
                     break
         
-            if data == '/JOIN __channel__':
-                    dictChannel = JOIN(dictChannel,channel,conn)
-                    data = "Your now connected to : " + cannel
-                    print ("sending : " + data)
-                    conn.send(data.encode())
+            if data == 'JOIN':
+                    chanel = conn.recv(1024).decode()
+                    dictChannel = JOIN(dictChannel,chanel,conn)
+                    reponce = "Your now connected to : " + chanel
+                    print ("sending : " + reponce)
+                    conn.send(reponce.encode())
                     break
+            
             #repond au donénes
             data = str(data).upper()
             print ("sending: " + str(data))
             conn.send(data.encode())
-             
+
     conn.close()
 
 
