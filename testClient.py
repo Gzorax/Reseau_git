@@ -13,12 +13,16 @@ def auxReadInput(text, i):
 def ReadInput (text):
         data = []
         if text[0] != '/':
-                return (0,text)      
+                print("la commande entrée est un message")
+                return (1,text)      
         else: 
+                print("la commande entrée est une instruction")
+                i = 1
                 while i != len(text):
                         commande ,y = auxReadInput(text,i)
                         data = data.append(commande)
                         i = y + 1
+                return(2,data)
                 
                 
 
@@ -52,16 +56,17 @@ def Main():
                         typ,data = ReadInput(message)
                         if typ == 1:
                                 for i in range(len(data)):
+                                        print("data send : " + data[i])
                                         soc.send(data[i].encode())
                                 reponce = soc.recv(1024).decode()
                                 print ('Received from server: ' + reponce)
                         else:
                         #envoie le message au channel
                                 #envoie la demande de texte
-                                soc.send(data.encode())
+                                soc.send(message.encode())
                                 #recoi le text envoyer par le server
-                                data = soc.recv(1024).decode()
-                                print (data)
+                                reponce = soc.recv(1024).decode()
+                                print (reponce)
                         
                 message = input(" -> ")
 
