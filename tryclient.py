@@ -1,28 +1,58 @@
 import socket
 import select
 import threading
+import string
+import sys
+
+def prompt():
+    sys.stdout.write('<You> ')
+    sys.stdout.flush()
 
 
+# main function
+if __name__ == "__main__":
 
-def Main():
-    host = '127.0.0.1'
-    port = 1459
+    if(len(sys.argv) < 3):
+        print ('Usage : python telnet.py hostname port')
+        sys.exit()
 
-    soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    soc.connect((host, port))
+    host = sys.argv[1]
+    port = int(sys.argv[2])
 
-    message = input(" -> ")
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(2)
 
-    while message != 'q':  # \BYE':
-        soc.send(.encode())
-        # recoi le text envoyer par le server
-        data = soc.recv(1024).decode()
-        print(data)
+    # connect to remote host
+    try:
+        s.connect((host, port))
+    except:
+        print ('Unable to connect')
+        sys.exit()
 
-        message = input(" -> ")
+    print ('Connected to remote host. Start sending messages')
+    prompt()
 
-    soc.close()
+    while 1:
+        socket_list = [sys.stdin, s]
 
+        # Get the list sockets which are readable
+        read_sockets, write_sockets, error_sockets = select.select(
+            socket_list, [], [])
 
-if __name__ == '__main__':
-    Main()
+        for sock in read_sockets:
+            # incoming message from remote server
+            if sock == s:
+                data = sock.recv(4096)
+                if not data:
+                    print ('\nDisconnected from chat server')
+                    sys.exit()
+                else:
+                    # print data
+                    sys.stdout.write(data)
+                    prompt()
+
+            # user entered a message
+            else:
+                msg = sys.stdin.readline()
+                s.send(msg)
+                prompt()
