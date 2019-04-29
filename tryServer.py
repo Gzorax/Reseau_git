@@ -2,21 +2,22 @@ import socket
 import select
 import threading
 
+
 def Main():
-#init
+    # init
     host = "127.0.0.1"
     port = 1459
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    mySocket.bind((host,port))
+    mySocket.bind((host, port))
     mySocket.listen(1)
 
     conn, addr = mySocket.accept()
-    print ("Connection from: " + str(addr))
+    print("Connection from: " + str(addr))
 
     while True:
-        #repond au donénes
+        # repond au donénes
         data = str(data).upper()
-        print ("sending: " + str(data))
+        print("sending: " + str(data))
         conn.send(data.encode())
 
     conn.close()
