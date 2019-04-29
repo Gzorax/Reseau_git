@@ -23,6 +23,21 @@ def ReadInput(text):
             data = data.append(commande)
             i = y + 1
 
+def ReadInput (text):
+        data = []
+        if text[0] != '/':
+                print("la commande entrée est un message")
+                return (1,text)      
+        else: 
+                print("la commande entrée est une instruction")
+                i = 1
+                while i != len(text):
+                        commande ,y = auxReadInput(text,i)
+                        data = data.append(commande)
+                        i = y + 1
+                return(2,data)
+                
+                
 
 def Main():
     host = '127.0.0.1'
@@ -66,6 +81,27 @@ def Main():
                 print(data)
 
         message = input(" -> ")
+         
+        while message != 'q': #\BYE':
+                if message == '/HELP':
+                        print (documentation)
+                else:
+                        typ,data = ReadInput(message)
+                        if typ == 1:
+                                for i in range(len(data)):
+                                        print("data send : " + data[i])
+                                        soc.send(data[i].encode())
+                                reponce = soc.recv(1024).decode()
+                                print ('Received from server: ' + reponce)
+                        else:
+                        #envoie le message au channel
+                                #envoie la demande de texte
+                                soc.send(message.encode())
+                                #recoi le text envoyer par le server
+                                reponce = soc.recv(1024).decode()
+                                print (reponce)
+                        
+                message = input(" -> ")
 
     soc.close()
 

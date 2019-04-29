@@ -45,22 +45,26 @@ def Main():
     # demande la pseudo avant toute autre action!
     dictClient, name = pseudo(dictClient, conn)
     conn.send("done".encode())
-    print("name saved")
+    print("name saved : " + name)
 
     while True:
             # recoie les données
             data = conn.recv(1024).decode()
+            print ("reveved data : " + data)
             if not data:
                     break
             print ("from connected " + name + ":" + str(data))
             if data == 'LIST':
+                    print ("comande enter : LIST")
                     reponce = LIST(dictChannel)
                     print ("sending : " + reponce)
                     conn.send(reponce.encode())
                     break
         
             if data == 'JOIN':
+                    print("commande enter : JOIN")
                     chanel = conn.recv(1024).decode()
+                    print("chanel receved : "+ chanel)
                     dictChannel = JOIN(dictChannel,chanel,conn)
                     reponce = "Your now connected to : " + chanel
                     print ("sending : " + reponce)
@@ -68,8 +72,9 @@ def Main():
                     break
             
             #repond au donénes
-            data = str(data).upper()
-            print ("sending: " + str(data))
+            # str(data).upper()
+            data = "erreur"
+            #print ("sending: " + str(data))
             conn.send(data.encode())
 
     conn.close()
