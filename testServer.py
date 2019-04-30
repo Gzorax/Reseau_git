@@ -7,7 +7,7 @@ def ReadCode(text, i):
     commande = ''
     while text[i] != ' ':
         commande = commande + text[i]
-        print("lettre " + str(i) + " " + text[i])
+        #print("lettre " + str(i) + " " + text[i])
         i += 1
         if i >= len(text):
             return (commande, i)
@@ -24,6 +24,15 @@ def pseudo(dictClient, conn):
         pseudo = conn.recv(1024).decode()
     dictClient[pseudo] = conn
     return (dictClient, pseudo)
+
+def Admin(conn, dictChannel):
+    for channel in dictChannel:
+            if conn in dictChannel[channel]:
+                    channelList = dictChannel[channel]
+                    break
+    if conn == channelList[0]:
+        return (true,channel)
+    return (false,channel)
 
 
 def LIST(dictChannel):
@@ -56,8 +65,13 @@ def WHO(dictChannel, conn, dictPseuod):
                 rep = rep + dictPseuod[channelList[connection]] + '\n'
         return rep
 
+def KICK(pseudo,chanel, dictChannel,dictClient):
+    conn = dictClient[pseudo]
+    dictChannel[channel] = dictChannel[channel].remove(conn)
+    return dictChannel
+
 def Main():
-    # init
+# init
     host = "127.0.0.1"
     port = 1459
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
@@ -77,22 +91,21 @@ def Main():
     dictChannel["kiwitopia"] = []
     dictChannel["licornTime"] = []
 
-    # demande la pseudo avant toute autre action!
+# demande la pseudo avant toute autre action!
     dictClient, name = pseudo(dictClient, conn)
     dictPseudo[conn] = name
-    conn.send("done".encode())
-    print("name saved : " + name)
+    conn.send(rint("lettre " + str(i) + " " + text[i])"done".encode())
+    print("namrint("lettre " + str(i) + " " + text[i])e saved : " + name)
+    print("lettre " + str(i) + " " + text[i])
 
-    while True:
+#lancement du server
+    while Truerint("lettre " + str(i) + " " + text[i]):
         # recoie les données
         reponce = ''
         data = conn.recv(1024).decode()
         print("reveved data : " + data)
-        #if not data:
-                #break
-
-        #print("from connected " + name + ":" + str(data))
         code, i = ReadCode(data, 0)
+
         if code == '/LIST':
             print("comande enter : LIST")
             reponce = LIST(dictChannel)
@@ -116,13 +129,21 @@ def Main():
             reponce = "Users in current channel :\n" + WHO(dictChannel,conn,dictPseudo)
             #break
         
+        #a tester!!!!
+        elif code == '/KICK':
+            print("commande enter : KICK")
+            pseudo, i = ReadCode(data, i+1)
+            adm, chan = Admin(conn,dictChannel)
+            if dam:
+                dictChannel = KICK(pseudo,chan,dictChannel,dictClient)
+                reponce = pseudo + "has been kicked of the channel"
+            else:
+                reponce = "you are not alowed to do that"
+            #break
+
         print("sending : " + reponce)
         conn.send(reponce.encode())
-        # repond au donénes
-        # str(data).upper()
-        #data = "should not append : erreur"
-        #print ("sending: " + str(data))
-        #conn.send(data.encode())
+        
 
     conn.close()
 
