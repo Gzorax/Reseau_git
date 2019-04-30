@@ -40,18 +40,37 @@ def JOIN(dictChannel, name, conn):
         dictChannel[name] = [conn]
     return dictChannel
 
+def LEAVE(dictChannel,conn):
+        for channel in dictChannel:
+                if conn in dictChannel[channel]:
+                        dictChannel[channel] = dictChannel[channel].remove(conn)
+                        return dictChannel
+
+def WHO(dictChannel, conn, dictPseuod):
+        for channel in dictChannel:
+            if conn in dictChannel[channel]:
+                    channelList = dictChannel[channel]
+                    break
+        rep = '@' + dictPseuod[channelList[0]] + '@'
+        for connection in range(1 ,len(channelList)):
+                rep = rep + dictPseuod[channelList[connection]] + '\n'
+        return rep
 
 def Main():
     # init
     host = "127.0.0.1"
-    port = 4000
+    port = 1459
     mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
     mySocket.bind((host, port))
     mySocket.listen(1)
     conn, addr = mySocket.accept()
     print("Connection from: " + str(addr))
 # données
+        #dictClient[pseudo] = conn
     dictClient = {}
+    #dictPseudo[conn] = pseudo
+    dictPseudo = {}
+    #dictChannel[channel] = [conn]
     dictChannel = {}
 
 # initialisation des données pour test a un seul client
@@ -60,11 +79,13 @@ def Main():
 
     # demande la pseudo avant toute autre action!
     dictClient, name = pseudo(dictClient, conn)
+    dictPseudo[conn] = name
     conn.send("done".encode())
     print("name saved : " + name)
 
     while True:
         # recoie les données
+        reponce = ''
         data = conn.recv(1024).decode()
         print("reveved data : " + data)
         #if not data:
@@ -75,8 +96,6 @@ def Main():
         if code == '/LIST':
             print("comande enter : LIST")
             reponce = LIST(dictChannel)
-            print("sending : " + reponce)
-            conn.send(reponce.encode())
             #break
 
         elif code == '/JOIN':
@@ -84,10 +103,21 @@ def Main():
             chanel, i = ReadCode(data, i+1)
             dictChannel = JOIN(dictChannel, chanel, conn)
             reponce = "Your now connected to : " + chanel
-            print("sending : " + reponce)
-            conn.send(reponce.encode())
             #break
-
+        
+        elif code == '/LEAVE':
+            print("comande enter : LEAVE")
+            dictChannel = LEAVE(dictChannel,conn)
+            reponce = "You have leave the channel"
+            #break
+        
+        elif code == '/WHO':
+            print("comande enter : WHO")
+            reponce = "Users in current channel :\n" + WHO(dictChannel,conn,dictPseudo)
+            #break
+        
+        print("sending : " + reponce)
+        conn.send(reponce.encode())
         # repond au donénes
         # str(data).upper()
         #data = "should not append : erreur"
