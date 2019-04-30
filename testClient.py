@@ -75,7 +75,9 @@ def Main():
                 print('Received from server: ' + reponce)
                 
         else:
-                print(message)
+                code = 'chanellMSG'
+                soc.send(code.encode())
+                #print(message)
 
         message = input(" -> ")
 

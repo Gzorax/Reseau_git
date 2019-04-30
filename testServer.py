@@ -13,6 +13,17 @@ def ReadCode(text, i):
             return (commande, i)
     return (commande, i)
 
+def SEND(conn,message,dictPseudo, dictChannel):
+    clitext = 'You : ' + message
+    text = dictPseudo[cli] + ' : ' + message
+    for chan in dictChannel:
+        if conn in dictChannel[chan]:
+            chanList = dictChannel[chan]
+            break
+    for cli in chanList:
+        if cli != conn :
+            cli.send(text.encode())
+    return clitext
 
 def pseudo(dictClient, conn):
     data = "what's your name ?"
@@ -70,6 +81,16 @@ def KICK(pseudo,chanel, dictChannel,dictClient):
     dictChannel[channel] = dictChannel[channel].remove(conn)
     return dictChannel
 
+def REN(channel,dictChannel,name):
+    chanList = dictChannel[channel]
+    dictChannel = del dictChannel[channel]
+    if name in dictChannel:
+        return (dictChannel,False)
+        
+    else:
+        dictChannel[name] = chanList
+        return (dictChannel,True)
+
 def Main():
 # init
     host = "127.0.0.1"
@@ -106,7 +127,11 @@ def Main():
         print("reveved data : " + data)
         code, i = ReadCode(data, 0)
 
-        if code == '/LIST':
+        if code == 'chanellMSG':
+            message, i = ReadCode(data, i+1)
+            reponce = SEND(conn,message,dictPseudo,dictChannel)
+        
+        elif code == '/LIST':
             print("comande enter : LIST")
             reponce = LIST(dictChannel)
             #break
@@ -133,13 +158,34 @@ def Main():
             print("commande enter : KICK")
             pseudo, i = ReadCode(data, i+1)
             adm, chan = Admin(conn,dictChannel)
-            if dam:
+            if adm:
                 dictChannel = KICK(pseudo,chan,dictChannel,dictClient)
                 reponce = pseudo + "has been kicked of the channel"
             else:
                 reponce = "you are not alowed to do that"
             #break
 
+        elif code == '/REN':
+            print("commande enter : REN")
+            name, i = ReadCode(data, i+1)
+            adm, chan = Admin(conn,dictChannel)
+            if adm:
+                change,done = REN(chan,dictChannel,name)
+                if done:
+                    reponce = "channel name has been change to : " + name
+                else:
+                    reponce = "chose an other name, this one is not avaiable"
+            else:
+                reponce = "you are not alowed to do that"
+            #break
+
+        elif code == '/MSG':
+            pseudo, i = ReadCode(data,i+1)
+            message,i= ReadCode(data,i+1)
+            cli = dictClient[pseudo]
+            cli.send(message.encode())
+            reponce = "You to " + pseudo + ' : ' + message
+            
         print("sending : " + reponce)
         conn.send(reponce.encode())
         
