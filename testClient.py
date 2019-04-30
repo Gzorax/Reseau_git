@@ -56,11 +56,8 @@ def Main():
 
 # gestion commandes
     while message != 'q':  # \BYE':
-        print ("lecture")
-        reponse = soc.recv(RECV_BUFFER).decode()
-        print(reponse)
-        if reponse[0]:
-                print(reponse)
+        
+        
         if message == '/HELP':
             print(documentation)
         elif message[0] == '/':
@@ -72,7 +69,7 @@ def Main():
             reponse = soc.recv(RECV_BUFFER).decode()
             print('Server: ' + reponse)
 
-        else:
+        elif message[0]:
             
             code = 'chanellMSG ' + message
             #print ("sendition to server " + code)
@@ -80,6 +77,11 @@ def Main():
             reponse = soc.recv(RECV_BUFFER).decode()
             print(reponse)
             # print(message)
+
+        else:
+                print ("lecture")
+                reponse = soc.recv(RECV_BUFFER).decode()
+                print(reponse)
 
         message = input(" -> ")
 
