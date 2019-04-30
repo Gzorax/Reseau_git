@@ -25,7 +25,7 @@ if __name__ == "__main__":
     host = '127.0.0.1'
     port = 1459
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM,0)
     s.settimeout(2)
 
     # connect to remote host

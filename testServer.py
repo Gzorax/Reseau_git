@@ -15,26 +15,29 @@ def ReadCode(text, i):
 
 def SEND(conn,message,dictPseudo, dictChannel):
     clitext = 'You : ' + message
-    text = dictPseudo[cli] + ' : ' + message
+    pseudo = dictPseudo[conn]
     for chan in dictChannel:
         if conn in dictChannel[chan]:
             chanList = dictChannel[chan]
             break
-    for cli in chanList:
-        if cli != conn :
-            cli.send(text.encode())
+    for i in range(len(chanList)):
+        print (str(chanList[i]))
+        if chanList[i] != conn:
+            text = dictPseudo[pseudo] + ' : ' + message
+            print (text)
+            chanList[i].send(text.encode())
     return clitext
 
-def pseudo(dictClient, conn):
+def PSEUDO(dictClient, conn):
     data = "what's your name ?"
     conn.send(data.encode())
-    pseudo = conn.recv(1024).decode()
-    while pseudo in dictClient:
+    ps = conn.recv(1024).decode()
+    while ps in dictClient:
         data = "name alredy taken, please chose an other"
         conn.send(data.encode())
-        pseudo = conn.recv(1024).decode()
-    dictClient[pseudo] = conn
-    return (dictClient, pseudo)
+        ps = conn.recv(1024).decode()
+    dictClient[ps] = conn
+    return (dictClient, ps)
 
 def Admin(conn, dictChannel):
     for channel in dictChannel:
@@ -42,8 +45,8 @@ def Admin(conn, dictChannel):
                     channelList = dictChannel[channel]
                     break
     if conn == channelList[0]:
-        return (true,channel)
-    return (false,channel)
+        return (True,channel)
+    return (False,channel)
 
 
 def LIST(dictChannel):
@@ -55,15 +58,23 @@ def LIST(dictChannel):
 
 def JOIN(dictChannel, name, conn):
     if name in dictChannel:
-        dictChannel[name] = dictChannel[name].append(conn)
+        print("\n added to existing channel")
+        chanList = dictChannel[name]
+        chanList = chanList + [conn]
+        dictChannel[name] = chanList
     else:
+        print ("channel created")
         dictChannel[name] = [conn]
+
+    print (dictChannel)
     return dictChannel
 
 def LEAVE(dictChannel,conn):
         for channel in dictChannel:
                 if conn in dictChannel[channel]:
                         dictChannel[channel] = dictChannel[channel].remove(conn)
+                        if not (dictChannel[channel]):
+                            del dictChannel[channel] 
                         return dictChannel
 
 def WHO(dictChannel, conn, dictPseuod):
@@ -71,19 +82,19 @@ def WHO(dictChannel, conn, dictPseuod):
             if conn in dictChannel[channel]:
                     channelList = dictChannel[channel]
                     break
-        rep = '@' + dictPseuod[channelList[0]] + '@'
+        rep = '@' + dictPseuod[channelList[0]] + '@\n'
         for connection in range(1 ,len(channelList)):
                 rep = rep + dictPseuod[channelList[connection]] + '\n'
         return rep
 
 def KICK(pseudo,chanel, dictChannel,dictClient):
     conn = dictClient[pseudo]
-    dictChannel[channel] = dictChannel[channel].remove(conn)
+    dictChannel[chanel] = dictChannel[chanel].remove(conn)
     return dictChannel
 
 def REN(channel,dictChannel,name):
     chanList = dictChannel[channel]
-    dictChannel = del dictChannel[channel]
+    del dictChannel[channel]
     if name in dictChannel:
         return (dictChannel,False)
         
@@ -93,13 +104,21 @@ def REN(channel,dictChannel,name):
 
 def Main():
 # init
-    host = "127.0.0.1"
+    #host = "127.0.0.1"
+    CONNECTION_LIST = []
+    RECV_BUFFER = 4096
+
     port = 1459
-    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    mySocket.bind((host, port))
-    mySocket.listen(1)
-    conn, addr = mySocket.accept()
-    print("Connection from: " + str(addr))
+    server_soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+    server_soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_soc.bind(('localhost', port))
+    server_soc.listen(10)
+    
+    #conn, addr = server_soc.accept()
+    #print("\n Connection from: " + str(addr))
+    CONNECTION_LIST.append(server_soc)
+
+
 # données
         #dictClient[pseudo] = conn
     dictClient = {}
@@ -108,89 +127,108 @@ def Main():
     #dictChannel[channel] = [conn]
     dictChannel = {}
 
-# initialisation des données pour test a un seul client
+# initialisation des données pour pseudoest a un seul client
     dictChannel["kiwitopia"] = []
     dictChannel["licornTime"] = []
 
-# demande la pseudo avant toute autre action!
-    dictClient, name = pseudo(dictClient, conn)
-    dictPseudo[conn] = name
-    conn.send("done".encode())
-    print("name saved : " + name)
-    p 
 
-#lancement du server
     while True:
-        # recoie les données
-        reponce = ''
-        data = conn.recv(1024).decode()
-        print("reveved data : " + data)
-        code, i = ReadCode(data, 0)
-
-        if code == 'chanellMSG':
-            message, i = ReadCode(data, i+1)
-            reponce = SEND(conn,message,dictPseudo,dictChannel)
-        
-        elif code == '/LIST':
-            print("comande enter : LIST")
-            reponce = LIST(dictChannel)
-            #break
-
-        elif code == '/JOIN':
-            print("commande enter : JOIN")
-            chanel, i = ReadCode(data, i+1)
-            dictChannel = JOIN(dictChannel, chanel, conn)
-            reponce = "Your now connected to : " + chanel
-            #break
-        
-        elif code == '/LEAVE':
-            print("comande enter : LEAVE")
-            dictChannel = LEAVE(dictChannel,conn)
-            reponce = "You have leave the channel"
-            #break
-        
-        elif code == '/WHO':
-            print("comande enter : WHO")
-            reponce = "Users in current channel :\n" + WHO(dictChannel,conn,dictPseudo)
-            #break
-        
-        elif code == '/KICK':
-            print("commande enter : KICK")
-            pseudo, i = ReadCode(data, i+1)
-            adm, chan = Admin(conn,dictChannel)
-            if adm:
-                dictChannel = KICK(pseudo,chan,dictChannel,dictClient)
-                reponce = pseudo + "has been kicked of the channel"
-            else:
-                reponce = "you are not alowed to do that"
-            #break
-
-        elif code == '/REN':
-            print("commande enter : REN")
-            name, i = ReadCode(data, i+1)
-            adm, chan = Admin(conn,dictChannel)
-            if adm:
-                change,done = REN(chan,dictChannel,name)
-                if done:
-                    reponce = "channel name has been change to : " + name
-                else:
-                    reponce = "chose an other name, this one is not avaiable"
-            else:
-                reponce = "you are not alowed to do that"
-            #break
-
-        elif code == '/MSG':
-            pseudo, i = ReadCode(data,i+1)
-            message,i= ReadCode(data,i+1)
-            cli = dictClient[pseudo]
-            cli.send(message.encode())
-            reponce = "You to " + pseudo + ' : ' + message
+    #check for interactions
+        rSoc, w, e = select.select(CONNECTION_LIST, [], [], 0)
+    #affect interactions
+        for conn in rSoc:
             
-        print("sending : " + reponce)
-        conn.send(reponce.encode())
-        
+        #nouveau client
+            if conn == server_soc:
+                conn,adr = server_soc.accept()
+            # demande la pseudo avant toute autre action!
+                dictClient, name = PSEUDO(dictClient, conn)
+                dictPseudo[conn] = name
+                CONNECTION_LIST.append(conn)
+                conn.send("done".encode())
+                print("\n name saved : " + name)
 
-    conn.close()
+
+            #interactions des clients deja connectés
+            else:
+            # recoie les données
+                reponse = ''
+                data = conn.recv(RECV_BUFFER).decode()
+                print("\n reveved data : " + data)
+                code, i = ReadCode(data, 0)
+
+                if code == 'chanellMSG':
+                    message, i = ReadCode(data, i+1)
+                    reponse = SEND(conn,message,dictPseudo,dictChannel)
+
+                elif code == '/LIST':
+                    print("\n comande enter : LIST")
+                    reponse = LIST(dictChannel)
+                    #break
+
+                elif code == '/JOIN':
+                    print("\n commande enter : JOIN")
+                    chanel, i = ReadCode(data, i+1)
+                    dictChannel = JOIN(dictChannel, chanel, conn)
+                    reponse = "Your now connected to : " + chanel
+                    #break
+
+                elif code == '/LEAVE':
+                    print("\n comande enter : LEAVE")
+                    dictChannel = LEAVE(dictChannel,conn)
+                    reponse = "You have leave the channel"
+                    #break
+
+                elif code == '/WHO':
+                    print("\n comande enter : WHO")
+                    reponse = "Users in current channel :\n" + WHO(dictChannel,conn,dictPseudo)
+                    #break
+
+                elif code == '/KICK':
+                    print("\n commande enter : KICK")
+                    ps, i = ReadCode(data, i+1)
+                    adm, chan = Admin(conn,dictChannel)
+                    if adm:
+                        dictChannel = KICK(ps,chan,dictChannel,dictClient)
+                        reponse = ps + " has been kicked of the channel"
+                    else:
+                        reponse = "you are not alowed to do that"
+                    #break
+
+                elif code == '/REN':
+                    print("\n commande enter : REN")
+                    name, i = ReadCode(data, i+1)
+                    adm, chan = Admin(conn,dictChannel)
+                    if adm:
+                        change,done = REN(chan,dictChannel,name)
+                        if done:
+                            reponse = "channel name has been change to : " + name
+                            dictChannel = change
+                        else:
+                            reponse = "chose an other name, this one is not avaiable"
+                    else:
+                        reponse = "you are not alowed to do that"
+                    #break
+
+                elif code == '/MSG':
+                    pseudo, i = ReadCode(data,i+1)
+                    message,i= ReadCode(data,i+1)
+                    cli = dictClient[pseudo]
+                    cli.send(message.encode())
+                    reponse = "You to " + pseudo + ' : ' + message
+
+                elif code == 'bye':
+                    CONNECTION_LIST.remove(conn)
+
+                else:
+                    reponse = 'wrong commade, /HELP for usage'
+
+
+                print("\n sending : " + reponse)
+                conn.send(reponse.encode())
+
+
+    server_soc.close()
 
 
 if __name__ == '__main__':

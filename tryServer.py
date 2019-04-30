@@ -66,7 +66,7 @@ if __name__ == "__main__":
                     sock.close()
                     CONNECTION_LIST.remove(sock)
                     continue
-
+host = "127.0.0.1"
     server_socket.close()
 
 
