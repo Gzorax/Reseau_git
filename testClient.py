@@ -42,7 +42,7 @@ def ReadInput (text,soc):
 
 def Main():
     host = '127.0.0.1'
-    port = 4000
+    port = 1459
 
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
     soc.connect((host, port))
