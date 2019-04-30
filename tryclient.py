@@ -2,19 +2,18 @@ import socket
 import select
 import threading
 import string
-import sys
+import time
 
-def prompt():
-    sys.stdout.write('<You> ')
-    sys.stdout.flush()
+
+
 
 
 # main function
 if __name__ == "__main__":
 
     if(len(sys.argv) < 3):
-        print ('Usage : python tryclient.py hostname port')
-        sys.exit()
+        print('Usage : python tryclient.py hostname port')
+        #sys.exit()
 
     host = sys.argv[1]
     port = int(sys.argv[2])
@@ -23,17 +22,19 @@ if __name__ == "__main__":
     s.settimeout(2)
 
     # connect to remote host
-    try:
-        s.connect((host, port))
-    except:
-        print ('Unable to connect')
-        sys.exit()
+    while True:
+        try:
+            s.connect((host, port))
+            break
+        except:
+            print('Unable to connect')
+            #sys.exit()
 
-    print ('Connected to remote host. Start sending messages')
-    prompt()
-
-    while 1:
-        socket_list = [sys.stdin, s]
+    print('Connected to remote host. Start sending messages')
+    #prompt()
+    
+    for i in range(1):
+        socket_list = [input(), s]
 
         # Get the list sockets which are readable
         read_sockets, write_sockets, error_sockets = select.select(
@@ -43,16 +44,16 @@ if __name__ == "__main__":
             # incoming message from remote server
             if sock == s:
                 data = sock.recv(4096)
-                if not data:
-                    print ('\nDisconnected from chat server')
-                    sys.exit()
-                else:
-                    # print data
-                    sys.stdout.write(data)
-                    prompt()
+
+                # else:
+                # print data
+                s.send(data.decode())
+
 
             # user entered a message
             else:
-                msg = sys.stdin.readline()
-                s.send(msg)
-                prompt()
+                msg = input('your message here')
+                s.send(msg.encode())
+         
+
+    i -=1
