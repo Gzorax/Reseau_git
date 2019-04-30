@@ -7,7 +7,7 @@ def ReadCode(text, i):
     commande = ''
     while text[i] != ' ':
         commande = commande + text[i]
-        #print("lettre " + str(i) + " " + text[i])
+        #p 
         i += 1
         if i >= len(text):
             return (commande, i)
@@ -94,12 +94,12 @@ def Main():
 # demande la pseudo avant toute autre action!
     dictClient, name = pseudo(dictClient, conn)
     dictPseudo[conn] = name
-    conn.send(rint("lettre " + str(i) + " " + text[i])"done".encode())
-    print("namrint("lettre " + str(i) + " " + text[i])e saved : " + name)
-    print("lettre " + str(i) + " " + text[i])
+    conn.send("done".encode())
+    print("name saved : " + name)
+    p 
 
 #lancement du server
-    while Truerint("lettre " + str(i) + " " + text[i]):
+    while True:
         # recoie les données
         reponce = ''
         data = conn.recv(1024).decode()
@@ -129,7 +129,6 @@ def Main():
             reponce = "Users in current channel :\n" + WHO(dictChannel,conn,dictPseudo)
             #break
         
-        #a tester!!!!
         elif code == '/KICK':
             print("commande enter : KICK")
             pseudo, i = ReadCode(data, i+1)
