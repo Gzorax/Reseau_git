@@ -1,6 +1,6 @@
 import socket
 import select
-import threading
+import _thread
 import string
 import time
 
@@ -22,6 +22,7 @@ def Main():
     RECV_BUFFER = 4096
 
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+    #soc.setBlocking(False)
 
     #soc.settimeout(2)
 
@@ -57,9 +58,16 @@ def Main():
 # gestion commandes
     while message != 'q':  # \BYE':
         
+        msg, _, _ = select.select([soc], [], [], 0)
+        if msg:
+            text = soc.recv(RECV_BUFFER)
+            print(text)
+            
         
-        if message == '/HELP':
+        elif message == '/HELP':
             print(documentation)
+            message = input(" -> ")
+        
         elif message[0] == '/':
             #code = ''
             # for i in range (1,len(message)):
@@ -68,6 +76,7 @@ def Main():
             soc.send(message.encode())
             reponse = soc.recv(RECV_BUFFER).decode()
             print('Server: ' + reponse)
+            message = input(" -> ")
 
         elif message[0]:
             
@@ -76,14 +85,11 @@ def Main():
             soc.send(code.encode())
             reponse = soc.recv(RECV_BUFFER).decode()
             print(reponse)
-            # print(message)
+            message = input(" -> ")
+            #print(message)
 
-        else:
-                print ("lecture")
-                reponse = soc.recv(RECV_BUFFER).decode()
-                print(reponse)
 
-        message = input(" -> ")
+        
 
     soc.send(bye.encode())
     print("disconnected from the server")

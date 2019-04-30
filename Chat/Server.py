@@ -14,16 +14,16 @@ def ReadCode(text, i):
     return (commande, i)
 
 def SEND(conn,message,dictPseudo, dictChannel):
-    clitext = 'You : ' + message
+    clitext = 'You : ' + message + '\n'
     pseudo = dictPseudo[conn]
     for chan in dictChannel:
         if conn in dictChannel[chan]:
             chanList = dictChannel[chan]
             break
     for i in range(len(chanList)):
-        print (str(chanList[i]))
+        #print (str(chanList[i]))
         if chanList[i] != conn:
-            text = dictPseudo[pseudo] + ' : ' + message
+            text = pseudo + " : " + message + "\n"
             print (text)
             chanList[i].send(text.encode())
     return clitext
