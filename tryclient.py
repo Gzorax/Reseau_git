@@ -4,19 +4,26 @@ import threading
 import string
 import time
 
-
+def ReadCode(text, i):
+    commande = ''
+    while text[i] != ' ':
+        commande = commande + text[i]
+        print("lettre " + str(i) + " " + text[i])
+        i += 1
+        if i >= len(text):
+            return (commande, i)
+    return (commande, i)
 
 
 
 # main function
 if __name__ == "__main__":
 
-    if(len(sys.argv) < 3):
-        print('Usage : python tryclient.py hostname port')
-        #sys.exit()
 
-    host = sys.argv[1]
-    port = int(sys.argv[2])
+
+
+    host = '127.0.0.1'
+    port = 1459
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(2)
@@ -57,3 +64,5 @@ if __name__ == "__main__":
          
 
     i -=1
+
+

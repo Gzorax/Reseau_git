@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # List to keep track of socket descriptors
     CONNECTION_LIST = []
     RECV_BUFFER = 4096  # Advisable to keep it as an exponent of 2
-    PORT = 5000
+    PORT = 1459
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # this has no effect, why ?
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
                 broadcast_data(sockfd, "[%s:%s] entered room\n" % addr)
 
-            # Some incoming message from a client
+            # Some incomhttps://github.com/Gzorax/Reseau_git.giting message from a client
             else:
                 # Data recieved from client, process it
                 try:
@@ -68,3 +68,12 @@ if __name__ == "__main__":
                     continue
 
     server_socket.close()
+
+
+
+
+
+
+
+
+
