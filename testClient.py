@@ -42,7 +42,7 @@ def ReadInput (text,soc):
 
 def Main():
     host = '127.0.0.1'
-    port = 1459
+    port = 4000
 
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
     soc.connect((host, port))
@@ -51,7 +51,7 @@ def Main():
 
     data = ''
     while data != 'done':
-        # recoi le text envoyer par le server
+        # recoi le text envoyé par le server
         data = soc.recv(1024).decode()
         if data == 'done':
             print("Received from server: name saved")
@@ -66,36 +66,19 @@ def Main():
     while message != 'q':  # \BYE':
         if message == '/HELP':
             print(documentation)
-        else:
-            typ, data = ReadInput(message)
-            if typ == 1:
-                for i in range(len(data)):
-                    soc.send(data[i].encode())
+        elif message[0] == '/':
+                #code = ''
+                #for i in range (1,len(message)):
+                 #       code  = code + message[i]
+                soc.send(message.encode())
                 reponce = soc.recv(1024).decode()
                 print('Received from server: ' + reponce)
-            else:
-                # envoie le message au channel
-                # envoie la demande de texte
-                soc.send(data.encode())
-                # recoi le text envoyer par le server
-                data = soc.recv(1024).decode()
-                print(data)
+                
+        else:
+                print(message)
 
         message = input(" -> ")
-         
-        while message != 'q': #\BYE':
-                if message == '/HELP':
-                        print (documentation)
-                else:
-                        typ,reponce = ReadInput(message,soc)
-                        if typ == 1:
-                                print (reponce)
-                        else: 
-                                reponce = soc.recv(1024).decode()
-                                print ('Received from server: ' + reponce)
-                        
-                        
-                message = input(" -> ")
+
 
     soc.close()
 
