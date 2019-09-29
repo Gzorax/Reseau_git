@@ -56,7 +56,7 @@ def Main():
     message = input(" -> ")
 
 # gestion commandes
-    while message != 'q':  # \BYE':
+    while message != '\BYE':
         
         msg, _, _ = select.select([soc], [], [], 0)
         if msg:
